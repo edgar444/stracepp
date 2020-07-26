@@ -11,14 +11,19 @@
 #include <stdlib.h>   /* EXIT_SUCCESS */
 #include <stdbool.h>  /* bool */
 
-/* Implementation-defined details */
-
 #define DYE_NONE  "\033[m"          /* clear  */
 #define DYE_PID   "\033[38;5;110m"  /* cyan   */
+#define DYE_INT   "\033[38;5;167m"  /* red    */
+
+#define CTX_PID  1U<<0
+#define CTX_INT  2U<<0
+
+#define HAD_PID  1U<<0
 
 struct syn_premeta {
-	bool gap;
-	bool had_pid;
+	bool dyed;
+	unsigned had;
+	unsigned ctx;
 };
 
 int main(void) {
@@ -28,19 +33,26 @@ int main(void) {
 		/* next entry */
 		if(c == '\n') {
 			fputs(DYE_NONE, stdout);
-			p.had_pid = 0;
-
-		} if(c >= '0' && c <= '9') {
-			/* start pid (field 1) */
-			if(!p.had_pid && (p.had_pid = true))
-				fputs(DYE_PID, stdout);
-		} else {
-			/* leave pid (field 1) */
-			if(p.had_pid && c == ' ') {
-				fputs(DYE_NONE, stdout);
-			}
-
+			p.had = p.ctx = p.dyed = 0;
+			continue;
 		}
+
+		/* pid (field 1) */
+		if(~p.had & HAD_PID && (p.had |= HAD_PID)) {
+			if(c >= '0' && c <= '9' && (p.ctx |= CTX_PID))
+				fputs(DYE_PID, stdout);
+		} else if(p.ctx & CTX_PID && c == ' ' && (p.ctx &= ~CTX_PID, 1)) {
+			fputs(DYE_NONE, stdout);
+		}
+
+		/* integer (constant) */
+		if(!p.ctx && c >= '0' && c <= '9' && (p.ctx |= CTX_INT)) {
+			fputs(DYE_INT, stdout);
+			continue;
+		} else if(p.ctx & CTX_INT && (c < '0' || c > '9') && c != 'x' && (c < 'a' || c > 'f') && (p.ctx &= ~CTX_INT, 1)) {
+			fputs(DYE_NONE, stdout);
+		}
+
 	}
 
 
