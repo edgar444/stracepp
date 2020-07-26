@@ -14,26 +14,29 @@
 #define DYE_NONE  "\033[m"          /* clear  */
 #define DYE_PID   "\033[38;5;110m"  /* cyan   */
 #define DYE_INT   "\033[38;5;167m"  /* red    */
+#define DYE_ENUM  "\033[38;5;222m"  /* yellow */
 
-#define CTX_PID  1U<<0
-#define CTX_INT  2U<<0
+#define CTX_PID   (1U<<0)
+#define CTX_INT   (1U<<1)
+#define CTX_ENUM  (1U<<2)
 
-#define HAD_PID  1U<<0
+#define HAD_PID  (1U<<0)
 
 struct syn_premeta {
 	bool dyed;
 	unsigned had;
 	unsigned ctx;
+	char prev;
 };
 
 int main(void) {
 	struct syn_premeta p = {0};
 
-	for(int c; c = getchar(), c != -1; putchar(c)) {
+	for(int c = 0; p.prev = c, c = getchar(), c != -1; putchar(c)) {
 		/* next entry */
 		if(c == '\n') {
 			fputs(DYE_NONE, stdout);
-			p.had = p.ctx = p.dyed = 0;
+			p.prev = p.had = p.ctx = p.dyed = 0;
 			continue;
 		}
 
@@ -50,6 +53,13 @@ int main(void) {
 			fputs(DYE_INT, stdout);
 			continue;
 		} else if(p.ctx & CTX_INT && (c < '0' || c > '9') && c != 'x' && (c < 'a' || c > 'f') && (p.ctx &= ~CTX_INT, 1)) {
+			fputs(DYE_NONE, stdout);
+		}
+
+		/* enumeration (constant) */
+		if(!p.ctx && ((c >= 'A' && c <= 'Z') || c == '_') && !(p.prev >= 'a' && p.prev <= 'z') && (p.ctx |= CTX_ENUM)) {
+			fputs(DYE_ENUM, stdout);
+		} else if(p.ctx & CTX_ENUM && (c < 'A' || c > 'Z') && c != '_' && (p.ctx &= ~CTX_ENUM, 1)) {
 			fputs(DYE_NONE, stdout);
 		}
 
