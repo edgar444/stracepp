@@ -11,14 +11,16 @@
 #include <stdlib.h>   /* EXIT_SUCCESS */
 #include <stdbool.h>  /* bool */
 
-#define DYE_NONE  "\033[m"          /* clear  */
-#define DYE_PID   "\033[38;5;110m"  /* cyan   */
-#define DYE_INT   "\033[38;5;167m"  /* red    */
-#define DYE_ENUM  "\033[38;5;222m"  /* yellow */
+#define DYE_NONE  "\033[m"          /* clear           */
+#define DYE_PID   "\033[38;5;110m"  /* cyan            */
+#define DYE_INT   "\033[38;5;167m"  /* red             */
+#define DYE_ENUM  "\033[38;5;222m"  /* yellow          */
+#define DYE_MARK  "\033[38;5;103m"  /* pale dark blue  */
 
 #define CTX_PID   (1U<<0)
 #define CTX_INT   (1U<<1)
 #define CTX_ENUM  (1U<<2)
+#define CTX_MARK  (1U<<3)
 
 #define HAD_PID  (1U<<0)
 
@@ -60,6 +62,13 @@ int main(void) {
 		if(!p.ctx && ((c >= 'A' && c <= 'Z') || c == '_') && !(p.prev >= 'a' && p.prev <= 'z') && (p.ctx |= CTX_ENUM)) {
 			fputs(DYE_ENUM, stdout);
 		} else if(p.ctx & CTX_ENUM && (c < 'A' || c > 'Z') && c != '_' && (p.ctx &= ~CTX_ENUM, 1)) {
+			fputs(DYE_NONE, stdout);
+		}
+
+		/* mark */
+		if(!p.ctx && (c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}') && (p.ctx |= CTX_MARK)) {
+			fputs(DYE_MARK, stdout);
+		} else if(p.ctx & CTX_MARK && (p.ctx &= ~CTX_MARK, 1)) {
 			fputs(DYE_NONE, stdout);
 		}
 
