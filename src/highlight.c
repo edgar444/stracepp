@@ -17,14 +17,17 @@
 #define DYE_ENUM  "\033[38;5;222m"  /* yellow          */
 #define DYE_MARK  "\033[38;5;103m"  /* pale dark blue  */
 #define DYE_CMNT  "\033[38;5;244m"  /* grey            */
+#define DYE_STR   "\033[38;5;107m"  /* green           */
 
 #define CTX_PID   (1U<<0)
 #define CTX_INT   (1U<<1)
 #define CTX_ENUM  (1U<<2)
 #define CTX_MARK  (1U<<3)
 #define CTX_CMNT  (1U<<4)
+#define CTX_STR   (1U<<5)
 
 #define HAD_PID  (1U<<0)
+#define HAD_ESC  (1U<<1)
 
 struct syn_premeta {
 	const char *dye, *dyed;
@@ -82,6 +85,24 @@ int main(void) {
 			p.dye = DYE_MARK;
 			continue;
 		} else if(p.ctx & CTX_MARK && (p.ctx &= ~CTX_MARK, 1)) {
+			p.dye = DYE_NONE;
+		}
+
+		/* string (literal) */
+		if(!p.ctx && c == '"' && (p.ctx |= CTX_STR)) {
+			p.dye = DYE_STR;
+			p.had |= HAD_ESC;
+			continue;
+		} else if(p.ctx & CTX_STR && c == '\\') {
+			p.had |= HAD_ESC;
+			putchar(c);
+			putchar(c = getchar());
+			c = getchar();
+			continue;
+		} else if(p.ctx & CTX_STR && p.had & HAD_ESC) {
+			p.had &= ~HAD_ESC;
+			continue;
+		} else if(p.ctx & CTX_STR && p.prev == '"' && (p.ctx &= ~CTX_STR, 1)) {
 			p.dye = DYE_NONE;
 		}
 	}
