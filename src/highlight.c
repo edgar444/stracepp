@@ -16,11 +16,13 @@
 #define DYE_INT   "\033[38;5;167m"  /* red             */
 #define DYE_ENUM  "\033[38;5;222m"  /* yellow          */
 #define DYE_MARK  "\033[38;5;103m"  /* pale dark blue  */
+#define DYE_CMNT  "\033[38;5;244m"  /* grey            */
 
 #define CTX_PID   (1U<<0)
 #define CTX_INT   (1U<<1)
 #define CTX_ENUM  (1U<<2)
 #define CTX_MARK  (1U<<3)
+#define CTX_CMNT  (1U<<4)
 
 #define HAD_PID  (1U<<0)
 
@@ -64,6 +66,13 @@ int main(void) {
 			p.dye = DYE_ENUM;
 			continue;
 		} else if(p.ctx & CTX_ENUM && (c < 'A' || c > 'Z') && c != '_' && (p.ctx &= ~CTX_ENUM, 1)) {
+			p.dye = DYE_NONE;
+		}
+
+		/* comments */
+		if(!p.ctx && c == '*' && p.prev == '/' && (p.ctx |= CTX_CMNT)) {
+			p.dye = DYE_CMNT;
+		} else if(p.ctx & CTX_CMNT && c == '/' && p.prev == '*' && (p.ctx &= ~CTX_CMNT, 1)) {
 			p.dye = DYE_NONE;
 		}
 
