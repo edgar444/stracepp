@@ -72,6 +72,7 @@ int main(void) {
 		/* comments */
 		if(!p.ctx && c == '*' && p.prev == '/' && (p.ctx |= CTX_CMNT)) {
 			p.dye = DYE_CMNT;
+			continue;
 		} else if(p.ctx & CTX_CMNT && c == '/' && p.prev == '*' && (p.ctx &= ~CTX_CMNT, 1)) {
 			p.dye = DYE_NONE;
 		}
