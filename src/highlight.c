@@ -60,7 +60,7 @@ int main(void) {
 		}
 
 		/* enumeration (constant) */
-		if(!p.ctx && ((c >= 'A' && c <= 'Z') || c == '_') && !(p.prev >= 'a' && p.prev <= 'z') && (p.ctx |= CTX_ENUM)) {
+		if(!p.ctx && ((c >= 'A' && c <= 'Z') || c == '_') && !(p.prev >= 'a' && p.prev <= 'z') && !(p.prev >= '0' && p.prev <= '9') && (p.ctx |= CTX_ENUM)) {
 			p.dye = DYE_ENUM;
 			continue;
 		} else if(p.ctx & CTX_ENUM && (c < 'A' || c > 'Z') && c != '_' && (p.ctx &= ~CTX_ENUM, 1)) {
