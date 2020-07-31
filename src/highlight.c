@@ -18,6 +18,7 @@
 #define DYE_MARK  "\033[38;5;103m"  /* pale dark blue  */
 #define DYE_CMNT  "\033[38;5;244m"  /* grey            */
 #define DYE_STR   "\033[38;5;107m"  /* green           */
+#define DYE_SYS   "\033[38;5;103m"  /* pale dark blue  */
 
 #define CTX_PID   (1U<<0)
 #define CTX_INT   (1U<<1)
@@ -25,9 +26,11 @@
 #define CTX_MARK  (1U<<3)
 #define CTX_CMNT  (1U<<4)
 #define CTX_STR   (1U<<5)
+#define CTX_SYS   (1U<<6)
 
 #define HAD_PID  (1U<<0)
 #define HAD_ESC  (1U<<1)
+#define HAD_SYS  (1U<<2)
 
 struct syn_premeta {
 	const char *dye, *dyed;
@@ -46,6 +49,19 @@ int main(void) {
 			p.dye = DYE_NONE;
 			p.prev = p.had = p.ctx = 0;
 			continue;
+		}
+
+		/* syscall */
+		if(~p.had & HAD_SYS && ~p.ctx & CTX_SYS && ((c >= 'a' && c <= 'z') || c == '_') && p.prev == ' ') {
+			p.ctx |= CTX_SYS;
+			p.had |= HAD_SYS;
+			p.dye = DYE_SYS;
+			continue;
+		} else if(~p.had & HAD_SYS && ((c == p.prev && c == '+') || c == '-')) {
+			p.had |= HAD_SYS;
+		} else if(p.had & HAD_SYS && p.ctx & CTX_SYS && !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')) {
+			p.dye = DYE_NONE;
+			p.ctx &= ~CTX_SYS;
 		}
 
 		/* pid (field 1) */
