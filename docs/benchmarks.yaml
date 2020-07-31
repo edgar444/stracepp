@@ -1,0 +1,15 @@
+4824367587189a28194e13472999c82348fb209c:
+- |
+  $ xzcat ./logs2/emerge_world.strace.xz | /tmp/tmp.hfTLPMUGRE | pv >/dev/null
+  12.2GiB 0:03:10 [65.5MiB/s] #1
+  12.2GiB 0:03:11 [65.1MiB/s] #2
+  $ xzcat ./logs2/emerge_world.strace.xz | pv >/dev/null
+  3.49GiB 0:00:06 [ 595MiB/s] #1
+  3.49GiB 0:00:05 [ 597MiB/s] #2
+  $ xzcat ./logs2/emerge_world.strace.xz | pv | md5sum
+  3.49GiB 0:00:06 [ 543MiB/s] #1 1c79a92684e97adfb465ade9a85c1539
+  3.49GiB 0:00:06 [ 562MiB/s] #2 1c79a92684e97adfb465ade9a85c1539
+  $ TZ= date +%Y-%m-%dT%H:%M:%SZ
+  2020-07-31T19:05:46Z
+  $ uname -nrmpo
+  Cloud 5.4.48-gentoo x86_64 AMD Ryzen 9 3950X 16-Core Processor GNU/Linux
