@@ -22,6 +22,7 @@
 #define DYE_CMNT  "\033[38;5;244m"  /* grey            */
 #define DYE_STR   "\033[38;5;107m"  /* green           */
 #define DYE_SYS   "\033[38;5;103m"  /* pale dark blue  */
+#define DYE_RET   "\033[38;5;215m"  /* orange          */
 
 #define HAD_SYS   (1U<<2)
 
@@ -29,6 +30,7 @@ struct syn_premeta {
 	const char *dye, *dyed;
 	unsigned had;
 	char prev;
+	unsigned depth;
 };
 
 int main(void) {
@@ -40,7 +42,7 @@ again:
 		/* next entry */
 		if(c == '\n') {
 			p.dye = DYE_NONE;
-			p.prev = p.had = 0;
+			p.prev = p.had = p.depth = 0;
 			continue;
 		}
 
@@ -64,6 +66,36 @@ again:
 			p.dye = DYE_DFL;
 			goto again;
 		}
+
+		/* return value */
+		if(p.had & HAD_SYS && (c == '(' || c == ')')) {
+			c == '(' ? p.depth++ : p.depth--;
+			if(!p.depth) {
+				printf(DYE_MARK ")" DYE_RET);
+				p.dyed = p.dye = DYE_RET;
+				for(; p.prev = c, c = getchar(), c != EOF && c != '\n'; printf("%s%c", p.dye != p.dyed ? p.dyed = p.dye : "", c)) {
+					/* delimiter */
+					if(c == '<' || c == '>') {
+						p.dye = DYE_DFL;
+						continue;
+					}
+					/* desc (error) */
+					if(c == '(') {
+						printf(DYE_CMNT "(");
+						while(p.prev = c, c = getchar(), c != EOF && c != '\n' && c != ')') putchar(c);
+						p.dyed = DYE_CMNT;
+						p.dye = DYE_NONE;
+						p.prev = putchar(')');
+						c = getchar();
+					}
+
+					/* default */
+					p.dye = DYE_RET;
+				}
+				goto again;
+			}
+		}
+
 
 		/* integer (constant) */
 		if(c >= '0' && c <= '9') {
