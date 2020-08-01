@@ -83,10 +83,8 @@ again:
 					if(c == '(') {
 						printf(DYE_CMNT "(");
 						while(p.prev = c, c = getchar(), c != EOF && c != '\n' && c != ')') putchar(c);
-						p.dyed = DYE_CMNT;
-						p.dye = DYE_NONE;
-						p.prev = putchar(')');
-						c = getchar();
+						p.dyed = p.dye = DYE_CMNT;
+						continue;
 					}
 
 					/* default */
