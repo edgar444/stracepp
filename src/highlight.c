@@ -52,6 +52,7 @@ int main(void) {
 			continue;
 		}
 
+again:
 		/* syscall */
 		if(~p.had & HAD_SYS && ~p.ctx & CTX_SYS && ((c >= 'a' && c <= 'z') || c == '_') && p.prev == ' ') {
 			p.ctx |= CTX_SYS;
@@ -63,6 +64,7 @@ int main(void) {
 		} else if(p.had & HAD_SYS && p.ctx & CTX_SYS && !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')) {
 			p.dye = DYE_NONE;
 			p.ctx &= ~CTX_SYS;
+			goto again;
 		}
 
 		/* pid (field 1) */
@@ -71,6 +73,7 @@ int main(void) {
 				p.dye = DYE_PID;
 		} else if(p.ctx & CTX_PID && c == ' ' && (p.ctx &= ~CTX_PID, 1)) {
 			p.dye = DYE_NONE;
+			goto again;
 		}
 
 		/* integer (constant) */
@@ -79,6 +82,7 @@ int main(void) {
 			continue;
 		} else if(p.ctx & CTX_INT && (c < '0' || c > '9') && c != 'x' && (c < 'a' || c > 'f') && (p.ctx &= ~CTX_INT, 1)) {
 			p.dye = DYE_NONE;
+			goto again;
 		}
 
 		/* enumeration (constant) */
@@ -87,6 +91,7 @@ int main(void) {
 			continue;
 		} else if(p.ctx & CTX_ENUM && (c < 'A' || c > 'Z') && c != '_' && (p.ctx &= ~CTX_ENUM, 1)) {
 			p.dye = DYE_NONE;
+			goto again;
 		}
 
 		/* comments */
@@ -108,6 +113,7 @@ int main(void) {
 			p.ctx &= ~CTX_CMNT;
 			p.had &= ~HAD_CMNT;
 			p.dye = DYE_NONE;
+			goto again;
 		}
 
 		/* mark */
@@ -116,6 +122,7 @@ int main(void) {
 			continue;
 		} else if(p.ctx & CTX_MARK && (p.ctx &= ~CTX_MARK, 1)) {
 			p.dye = DYE_NONE;
+			goto again;
 		}
 
 		/* string (literal) */
@@ -134,6 +141,7 @@ int main(void) {
 			continue;
 		} else if(p.ctx & CTX_STR && p.prev == '"' && (p.ctx &= ~CTX_STR, 1)) {
 			p.dye = DYE_NONE;
+			goto again;
 		}
 	}
 
