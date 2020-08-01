@@ -86,7 +86,13 @@ again:
 						p.dyed = p.dye = DYE_CMNT;
 						continue;
 					}
-
+					/* enum (error) */
+					if(c >= 'A' && c <= 'Z') {
+						printf(DYE_ENUM "%c", c);
+						while(p.prev = c, c = getchar(), c != EOF && c != '\n' && c != ' ') putchar(c);
+						p.dyed = p.dye = DYE_ENUM;
+						continue;
+					}
 					/* default */
 					p.dye = DYE_RET;
 				}
