@@ -4,6 +4,7 @@
 //bin/true; export IFLAGS="-fsanitize=address,undefined,pointer-compare,pointer-subtract -fstack-protector-all"
 //bin/true; export ASAN_OPTIONS="detect_invalid_pointer_pairs=2"
 //usr/bin/cc -pipe -ggdb3 $OFLAGS $CFLAGS $WFLAGS $IFLAGS -std=iso9899:2018 -o "${o=`mktemp`}" "$0" || exit 2
+//bin/true; (set -x; readelf -s "$o")  | awk '/\47.symtab\47/{p=1}; p&&p++<3||$NF=="main"'
 //bin/true; test() { for x in ../test/*/*/[0-9][0-9]_*.c; do (:; "$x") 2>/dev/null; done;}
 //bin/true; test | exec setarch -R -- sh -c 'set -x; exec -a "$0" "$@"' "$0" "$o" "$@"
 //bin/true; exit 1;
