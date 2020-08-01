@@ -28,9 +28,10 @@
 #define CTX_STR   (1U<<5)
 #define CTX_SYS   (1U<<6)
 
-#define HAD_PID  (1U<<0)
-#define HAD_ESC  (1U<<1)
-#define HAD_SYS  (1U<<2)
+#define HAD_PID   (1U<<0)
+#define HAD_ESC   (1U<<1)
+#define HAD_SYS   (1U<<2)
+#define HAD_CMNT  (1U<<3)
 
 struct syn_premeta {
 	const char *dye, *dyed;
@@ -89,10 +90,23 @@ int main(void) {
 		}
 
 		/* comments */
-		if(!p.ctx && c == '*' && p.prev == '/' && (p.ctx |= CTX_CMNT)) {
-			p.dye = DYE_CMNT;
-			continue;
-		} else if(p.ctx & CTX_CMNT && c == '/' && p.prev == '*' && (p.ctx &= ~CTX_CMNT, 1)) {
+		if(!p.ctx && c == '/') {
+			c = getchar();
+			if(c == '*') {
+				p.dye = DYE_CMNT;
+				p.ctx |= CTX_CMNT;
+				ungetc(c, stdin);
+				c = '/';
+				continue;
+			} else {
+				ungetc(c, stdin);
+				c = '/';
+			}
+		} else if(p.ctx & CTX_CMNT && c == '/' && p.prev == '*') {
+			p.had |= HAD_CMNT;
+		} else if(p.ctx & CTX_CMNT && p.had & HAD_CMNT) {
+			p.ctx &= ~CTX_CMNT;
+			p.had &= ~HAD_CMNT;
 			p.dye = DYE_NONE;
 		}
 
