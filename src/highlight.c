@@ -13,6 +13,7 @@
 #include <assert.h>   /* assert */
 
 #define DYE_NONE  "\033[m"          /* clear           */
+#define DYE_DFL   "\033[38;5;188m"  /* white           */
 #define DYE_PID   "\033[38;5;110m"  /* cyan            */
 #define DYE_INT   "\033[38;5;167m"  /* red             */
 #define DYE_ENUM  "\033[38;5;222m"  /* yellow          */
@@ -48,7 +49,7 @@ again:
 			while(p.prev = c, c = getchar(), c != EOF && c != '\n' && ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')) putchar(c);
 			p.had |= HAD_SYS;
 			p.dyed = DYE_SYS;
-			p.dye = DYE_NONE;
+			p.dye = DYE_DFL;
 			goto again;
 		} else if(~p.had & HAD_SYS && ((c == p.prev && c == '+') || c == '-')) {
 			p.had |= HAD_SYS;
@@ -59,7 +60,7 @@ again:
 			printf(DYE_PID "%c", c);
 			while(p.prev = c, c = getchar(), c != EOF && c != '\n' && c != ' ') putchar(c);
 			p.dyed = DYE_PID;
-			p.dye = DYE_NONE;
+			p.dye = DYE_DFL;
 			goto again;
 		}
 
@@ -68,7 +69,7 @@ again:
 			printf(DYE_INT "%c", c);
 			while(p.prev = c, c = getchar(), c != EOF && c != '\n' && ((c >= '0' && c <= '9') || c == 'x' || (c >= 'a' && c <= 'f'))) putchar(c);
 			p.dyed = DYE_INT;
-			p.dye = DYE_NONE;
+			p.dye = DYE_DFL;
 			goto again;
 		}
 
@@ -77,7 +78,7 @@ again:
 			printf(DYE_ENUM "%c", c);
 			while(p.prev = c, c = getchar(), c != EOF && c != '\n' && ((c >= 'A' && c <= 'Z') || c == '_')) putchar(c);
 			p.dyed = DYE_ENUM;
-			p.dye = DYE_NONE;
+			p.dye = DYE_DFL;
 			goto again;
 		}
 
@@ -90,7 +91,7 @@ again:
 				p.prev = putchar(c);
 				c = getchar();
 				p.dyed = DYE_CMNT;
-				p.dye = DYE_NONE;
+				p.dye = DYE_DFL;
 				goto again;
 			} else {
 				ungetc(c, stdin);
@@ -104,7 +105,7 @@ again:
 			p.prev = c;
 			c = getchar();
 			p.dyed = DYE_MARK;
-			p.dye = DYE_NONE;
+			p.dye = DYE_DFL;
 			goto again;
 		}
 
@@ -120,7 +121,7 @@ again:
 			p.prev = putchar(c);
 			c = getchar();
 			p.dyed = DYE_STR;
-			p.dye = DYE_NONE;
+			p.dye = DYE_DFL;
 			goto again;
 		}
 	}
