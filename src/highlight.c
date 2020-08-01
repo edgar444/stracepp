@@ -150,10 +150,10 @@ again:
 		if(c == '"') {
 			printf(DYE_STR "\"");
 			for(
-					bool had_esc = 1;
+					bool had_esc = 0;
 					c = getchar(), c != EOF && c != '\n' && (c != '"' || had_esc);
 					putchar(c)) {
-				had_esc = c == '\\' ? putchar(c), putchar(c = getchar()), 1: 0;
+				had_esc = c == '\\';
 			}
 			p.prev = putchar(c);
 			c = getchar();
