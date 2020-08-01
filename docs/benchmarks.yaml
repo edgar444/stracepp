@@ -103,3 +103,21 @@ c1c77fddde35ebdf1550b127ffe6d712ddeca30d:
   2020-08-01T14:41:32Z
   $ uname -nrmpo
   Cloud 5.4.48-gentoo x86_64 AMD Ryzen 9 3950X 16-Core Processor GNU/Linux
+c80c456cc87a677627fb1772009501e59f4bb2dd:
+- |
+  $ xzcat ./bench/emerge_world.strace.xz | pv -Cbta >/dev/null
+  3.49GiB 0:00:07 [ 497MiB/s] #1
+  3.49GiB 0:00:07 [ 505MiB/s] #2
+  3.49GiB 0:00:07 [ 509MiB/s] #3
+  $ xzcat ./bench/emerge_world.strace.xz | '/tmp/tmp.vuSUAK7rlE' | pv -Cbta >/dev/null
+  12.1GiB 0:01:42 [ 121MiB/s] #1
+  12.1GiB 0:01:42 [ 122MiB/s] #2
+  12.1GiB 0:01:42 [ 122MiB/s] #3
+  $ xzcat ./bench/emerge_world.strace.xz | pv -Cbta | md5sum
+  3.49GiB 0:00:06 [ 532MiB/s] #1 1c79a92684e97adfb465ade9a85c1539
+  3.49GiB 0:00:07 [ 500MiB/s] #2 1c79a92684e97adfb465ade9a85c1539
+  3.49GiB 0:00:06 [ 512MiB/s] #3 1c79a92684e97adfb465ade9a85c1539
+  $ TZ= date +%Y-%m-%dT%H:%M:%SZ
+  2020-08-01T15:08:57Z
+  $ uname -nrmpo
+  Cloud 5.4.48-gentoo x86_64 AMD Ryzen 9 3950X 16-Core Processor GNU/Linux
