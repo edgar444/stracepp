@@ -21,16 +21,11 @@
 #define DYE_STR   "\033[38;5;107m"  /* green           */
 #define DYE_SYS   "\033[38;5;103m"  /* pale dark blue  */
 
-#define CTX_PID   (1U<<0)
-#define CTX_SYS   (1U<<6)
-
-#define HAD_PID   (1U<<0)
 #define HAD_SYS   (1U<<2)
 
 struct syn_premeta {
 	const char *dye, *dyed;
 	unsigned had;
-	unsigned ctx;
 	char prev;
 };
 
@@ -43,31 +38,18 @@ again:
 		/* next entry */
 		if(c == '\n') {
 			p.dye = DYE_NONE;
-			p.prev = p.had = p.ctx = 0;
+			p.prev = p.had = 0;
 			continue;
 		}
 
-		if(!p.ctx) goto noctx;
-
-		/* exit context */
-		if(
-			(p.ctx == CTX_SYS && p.had & HAD_SYS && !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'))
-		) {
-			p.ctx = 0;
-			p.dye = DYE_NONE;
-		} else continue;
-
-
-		/* enter context */
-noctx:
-		assert(!p.ctx);
-
 		/* syscall */
 		if(~p.had & HAD_SYS && ((c >= 'a' && c <= 'z') || c == '_') && p.prev == ' ') {
-			p.ctx = CTX_SYS;
+			printf(DYE_SYS "%c", c);
+			while(p.prev = c, c = getchar(), c != EOF && c != '\n' && ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_')) putchar(c);
 			p.had |= HAD_SYS;
-			p.dye = DYE_SYS;
-			continue;
+			p.dyed = DYE_SYS;
+			p.dye = DYE_NONE;
+			goto again;
 		} else if(~p.had & HAD_SYS && ((c == p.prev && c == '+') || c == '-')) {
 			p.had |= HAD_SYS;
 		}
