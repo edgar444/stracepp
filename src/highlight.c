@@ -8,6 +8,23 @@
 //bin/true; test() { for x in ../test/*/*/[0-9][0-9]_*.c; do (:; "$x") 2>/dev/null; done;}
 //bin/true; test | exec setarch -R -- sh -c 'set -x; exec -a "$0" "$@"' "$0" "$o" "$@"
 //bin/true; exit 1;
+/*
+ * Strace syntax highlighter.
+ * Copyright (C) 2020 Edgars Dragon
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 #include <stdio.h>    /* getchar fputs */
 #include <stdlib.h>   /* EXIT_SUCCESS */
 #include <stdbool.h>  /* bool */
